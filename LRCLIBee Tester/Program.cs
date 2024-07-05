@@ -13,7 +13,7 @@ namespace LRCLIBee_Tester
         {
             LRCLIBClient client = new LRCLIBClient("");
             //client.getLyrics("Chetta", "MEET ME AT MY WORST", "SACRIFICE & SABOTAGE", 284);
-            client.getLyrics("Borislav Slavov", "I Want to Live", "Baldur's Gate 3", 233);
+            client.getLyrics("Paradise Lost", "Darker Thoughts", "Obsidian", 346);
         }
     }
 }

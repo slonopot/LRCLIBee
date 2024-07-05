@@ -5,6 +5,7 @@ using System.Configuration.Provider;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Windows;
 using System.Windows.Forms;
 
@@ -30,12 +31,16 @@ namespace MusicBeePlugin
             configFile = Path.Combine(musicBee.Setting_GetPersistentStoragePath(), @"lrclibee.conf");
             logFile = Path.Combine(musicBee.Setting_GetPersistentStoragePath(), @"lrclibee.log");
 
+            //Windows 7 fix
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
             info.PluginInfoVersion = PluginInfoVersion;
             info.Name = name;
 
             info.VersionMajor = 1;
             info.VersionMinor = 0;
-            info.Revision = 1;
+            info.Revision = 2;
 
             info.Description = $"LRCLIB support for MusicBee [{info.VersionMajor}.{info.VersionMinor}.{info.Revision}]";
             info.Author = "slonopot";
@@ -52,7 +57,7 @@ namespace MusicBeePlugin
                 var target = new NLog.Targets.FileTarget(name)
                 {
                     FileName = logFile,
-                    Layout = "${date} | ${level} | ${callsite} | ${message}",
+                    Layout = "${date} | ${level} | ${callsite} | ${message} ${exception:format=tostring}",
                     DeleteOldFileOnStartup = true,
                     Name = name
                 };
@@ -116,16 +121,24 @@ namespace MusicBeePlugin
                 try { (artist, title, album, duration) = TryGetFileMetadata(source); }
                 catch { Logger.Debug("Failed to extract metadata from {source}", source); }
             }
+            try
+            {
+                var lyrics = musixmatchClient.getLyrics(artist, title, album, duration);
+                return lyrics;
+            }
+            catch (Exception ex)
+            {
+                Logger.Debug(ex);
+                return null;
+            }
 
-            var lyrics = musixmatchClient.getLyrics(artist, title, album, duration);
-            return lyrics;
         }
 
         public void ReceiveNotification(String source, NotificationType type) { }
         public void SaveSettings() { }
 
         public bool Configure(IntPtr panelHandle) { return false; } //fixes the popup
-        
+
         //public bool Configure(IntPtr panelHandle) {
         //    string dataPath = musicBee.Setting_GetPersistentStoragePath();
         //    // panelHandle will only be set if you set about.ConfigurationPanelHeight to a non-zero value

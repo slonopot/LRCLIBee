@@ -134,7 +134,7 @@ namespace LRCLIBee
 
             if (duration != 0) {
                 Logger.Info("Trying to find by signature");
-                match = null; //bySignature(artist, title, album, duration);
+                match = bySignature(artist, title, album, duration);
                 if (match == null) Logger.Info("Not found");
             }
             
@@ -168,7 +168,7 @@ namespace LRCLIBee
             if ((PreferSyncedLyrics || OnlySyncedLyrics) && match.syncedLyrics != null)
                 result = match.syncedLyrics;
            
-            if (!OnlySyncedLyrics)
+            if (result == null && !OnlySyncedLyrics)
                 result = match.plainLyrics;
 
             if (result == null)
