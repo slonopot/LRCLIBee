@@ -1,0 +1,9 @@
+{
+  "allowedDistance": 5,
+  "delimiters": [ "&", ";", "," ],
+  "verifyAlbum": false,
+  "addLyricsSource": false,
+  "trimTitle": false,
+  "preferSyncedLyrics": false,
+  "onlySyncedLyrics": false
+}

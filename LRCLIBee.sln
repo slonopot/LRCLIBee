@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LRCLIBee", "LRCLIBee\LRCLIBee.csproj", "{1F6F2190-32AC-474E-8942-6349E976DCA8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LRCLIBee Tester", "LRCLIBee Tester\LRCLIBee Tester.csproj", "{63C31CD1-B9CF-49C1-A3D8-7AC554AD2E8A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1F6F2190-32AC-474E-8942-6349E976DCA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F6F2190-32AC-474E-8942-6349E976DCA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F6F2190-32AC-474E-8942-6349E976DCA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F6F2190-32AC-474E-8942-6349E976DCA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63C31CD1-B9CF-49C1-A3D8-7AC554AD2E8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63C31CD1-B9CF-49C1-A3D8-7AC554AD2E8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63C31CD1-B9CF-49C1-A3D8-7AC554AD2E8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63C31CD1-B9CF-49C1-A3D8-7AC554AD2E8A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {595DB148-E9CA-4681-8878-CC79E77C6CEB}
+	EndGlobalSection
+EndGlobal
