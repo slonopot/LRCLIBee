@@ -34,7 +34,7 @@ namespace LRCLIBee
             LyricsProviderName = lyricsProviderName;
 
             client.DefaultRequestHeaders.Remove("User-Agent");
-            client.DefaultRequestHeaders.Add("User-Agent", "LRCLIBee");
+            client.DefaultRequestHeaders.Add("User-Agent", "LRCLIBee [https://github.com/slonopot/LRCLIBee]");
   
             if (File.Exists(Plugin.configFile))
             {
