@@ -35,7 +35,7 @@ namespace MusicBeePlugin
 
             info.VersionMajor = 1;
             info.VersionMinor = 0;
-            info.Revision = 0;
+            info.Revision = 1;
 
             info.Description = $"LRCLIB support for MusicBee [{info.VersionMajor}.{info.VersionMinor}.{info.Revision}]";
             info.Author = "slonopot";
