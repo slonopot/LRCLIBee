@@ -21,7 +21,7 @@ namespace MusicBeePlugin
 
         private MusicBeeApiInterface musicBee;
         private PluginInfo info = new PluginInfo();
-        private LRCLIBClient musixmatchClient;
+        private LRCLIBClient lrclibClient;
 
         public PluginInfo Initialise(IntPtr apiPtr)
         {
@@ -40,7 +40,7 @@ namespace MusicBeePlugin
 
             info.VersionMajor = 1;
             info.VersionMinor = 0;
-            info.Revision = 2;
+            info.Revision = 3;
 
             info.Description = $"LRCLIB support for MusicBee [{info.VersionMajor}.{info.VersionMinor}.{info.Revision}]";
             info.Author = "slonopot";
@@ -79,7 +79,7 @@ namespace MusicBeePlugin
 
                 Logger = LogManager.GetLogger(name);
 
-                musixmatchClient = new LRCLIBClient(LRCLIBeeLyricsProvider);
+                lrclibClient = new LRCLIBClient(LRCLIBeeLyricsProvider);
             }
             catch (Exception e)
             {
@@ -97,15 +97,20 @@ namespace MusicBeePlugin
             return new string[] { LRCLIBeeLyricsProvider };
         }
 
-        private (string, string, string, int) TryGetFileMetadata(String source)
+        private (string, string, string, string, int) TryGetFileMetadata(String source)
         {
             var tfile = TagLib.File.Create(source);
             string title = tfile.Tag.Title;
             string artist = String.Join(" & ", tfile.Tag.AlbumArtists);
             string album = tfile.Tag.Album;
             int duration = (int)tfile.Properties.Duration.TotalSeconds;
-            Logger.Debug("Extracted metadata from {source}: artist={artist}, title={title}, album={album}, duration={duration}", source, artist, title, album, duration);
-            return (artist, title, album, duration);
+
+            string albumArtist = null;
+            if (tfile.Tag.AlbumArtists.Length > 0)
+                albumArtist = String.Join(" & ", tfile.Tag.AlbumArtists);
+
+            Logger.Debug("Extracted metadata from {source}: artist={artist}, title={title}, album={album}, duration={duration}, albumArtist={albumArtist}", source, artist, title, album, duration, albumArtist);
+            return (artist, albumArtist, title, album, duration); ;
         }
 
         public String RetrieveLyrics(String source, String artist, String title, String album, bool preferSynced, String providerName)
@@ -115,15 +120,18 @@ namespace MusicBeePlugin
             if (providerName != LRCLIBeeLyricsProvider) return null;
 
             int duration = 0;
+            string albumArtist = null;
 
             if (source != string.Empty)
             {
-                try { (artist, title, album, duration) = TryGetFileMetadata(source); }
+                try { (artist, albumArtist, title, album, duration) = TryGetFileMetadata(source); }
                 catch { Logger.Debug("Failed to extract metadata from {source}", source); }
             }
             try
             {
-                var lyrics = musixmatchClient.getLyrics(artist, title, album, duration);
+                var lyrics = lrclibClient.getLyrics(artist, title, album, duration);
+                if (string.IsNullOrEmpty(lyrics) && !string.IsNullOrEmpty(albumArtist) && artist != albumArtist)
+                    lyrics = lrclibClient.getLyrics(albumArtist, title, album, duration);
                 return lyrics;
             }
             catch (Exception ex)
