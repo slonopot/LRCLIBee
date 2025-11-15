@@ -188,7 +188,10 @@ namespace LRCLIBee
 
                 if (Util.ValidateResult(artist, title, match.artistName, match.trackName, AllowedDistance))
                     if (duration == 0 || match.duration == duration)
+                    {
+                        if (OnlySyncedLyrics && String.IsNullOrEmpty(match.syncedLyrics)) continue;
                         return match;
+                    }
                     else Logger.Info("Mismatching durations: {duration} and {resultduration}", duration, match.duration);
             }
          
