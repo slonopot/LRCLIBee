@@ -13,7 +13,9 @@ namespace LRCLIBee_Tester
         {
             LRCLIBClient client = new LRCLIBClient("");
             //client.getLyrics("Chetta", "MEET ME AT MY WORST", "SACRIFICE & SABOTAGE", 284);
-            client.getLyrics("Paradise Lost", "Darker Thoughts", "Obsidian", 346);
+            var result1 = client.getLyrics("安月名莉子", "君にふれて", "", 252);
+            var result2 = client.getLyrics("Azuna Riko", "君にふれて", "", 252);
+            { }
         }
     }
 }

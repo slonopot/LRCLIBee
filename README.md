@@ -22,7 +22,8 @@ Create lrclibee.conf in the `%APPDATA%\MusicBee\` directory (`AppData` for porta
         "addLyricsSource": false,
         "trimTitle": false,
         "preferSyncedLyrics": false,
-        "onlySyncedLyrics": false
+        "onlySyncedLyrics": false,
+        "searchByTitle": false
     }
 
 lrclibee.conf includes several options. You are allowed to use only ones you need, just omit the line and don't forget about commas in JSON.
@@ -33,6 +34,7 @@ lrclibee.conf includes several options. You are allowed to use only ones you nee
 5. Configurable title trim. This option will remove all content in brackets from the title. By default MusicBee removes only features in the round brackets, this option will remove all content in `[]`, `{}`, `<>` and `()`.
 6. Configurable synced lyrics preference. Plugin will return synced lyrics in LRC format. Advanced LRC (split by words) is not supported by MusicBee.
 7. Configurable synced lyrics preference (forced). Plugin will only return synced lyrics in LRC format and pass the request to another plugin if not found. This allows to choose synced Musixmatch first and text Genius second, for example.
+8. Configurable search by title. If other search attempts fail, plugin will try to look up a result using only track title and duration. This allows to get hits for romanized artist names.
 Restart MusicBee to apply changes.
 
 ### Logic

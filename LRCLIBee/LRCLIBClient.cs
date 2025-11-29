@@ -7,6 +7,7 @@ using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using Topten.JsonKit;
 
@@ -29,13 +30,15 @@ namespace LRCLIBee
         private bool TrimTitle = false;
         private bool PreferSyncedLyrics = true;
         private bool OnlySyncedLyrics = false;
+        private bool SearchByTitle = true;
+
         public LRCLIBClient(string lyricsProviderName = null)
         {
             LyricsProviderName = lyricsProviderName;
 
             client.DefaultRequestHeaders.Remove("User-Agent");
             client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "LRCLIBee [https://github.com/slonopot/LRCLIBee]");
-  
+
             if (File.Exists(Plugin.configFile))
             {
                 string data = File.ReadAllText(Plugin.configFile);
@@ -54,6 +57,8 @@ namespace LRCLIBee
                     PreferSyncedLyrics = (bool)config.preferSyncedLyrics;
                 if (Util.PropertyExists(config, "onlySyncedLyrics"))
                     OnlySyncedLyrics = (bool)config.onlySyncedLyrics;
+                if (Util.PropertyExists(config, "searchByTitle"))
+                    SearchByTitle = (bool)config.searchByTitle;
 
                 if (Util.PropertyExists(config, "apiURL"))
                     ApiURL = config.apiURL;
@@ -108,11 +113,13 @@ namespace LRCLIBee
             return response;
         }
 
-        private dynamic search(string artist, string title, string album = null)
+        private dynamic search(string artist = null, string title = null, string album = null)
         {
+            if (string.IsNullOrEmpty(artist) && string.IsNullOrEmpty(title)) throw new ArgumentNullException();
+
             var parameters = new NameValueCollection();
-            parameters.Add("track_name", title);
-            parameters.Add("artist_name", artist);
+            if (!string.IsNullOrEmpty(title)) parameters.Add("track_name", title);
+            if (!string.IsNullOrEmpty(artist)) parameters.Add("artist_name", artist);
             if (!string.IsNullOrEmpty(album)) parameters.Add("album_name", album);
 
             dynamic response = this.LRCLIBRequest("search", parameters);
@@ -132,12 +139,13 @@ namespace LRCLIBee
 
             dynamic match = null;
 
-            if (duration != 0) {
+            if (duration != 0)
+            {
                 Logger.Info("Trying to find by signature");
                 match = bySignature(artist, title, album, duration);
                 if (match == null) Logger.Info("Not found");
             }
-            
+
             if (match == null)
             {
                 Logger.Info("Trying to search");
@@ -158,16 +166,24 @@ namespace LRCLIBee
                 }
             }
 
-            if (match == null) { 
+            if (match == null && duration != 0 && SearchByTitle)
+            {
+                Logger.Info("Trying to search by title");
+                match = findInMatchesByTitleAndDuration(search(null, title), title, duration);
+            }
+
+            if (match == null)
+            {
                 Logger.Info("Nothing found at all");
                 return null;
-            } else Logger.Info("Got a hit");
+            }
+            else Logger.Info("Got a hit");
 
             string result = null;
 
             if ((PreferSyncedLyrics || OnlySyncedLyrics) && match.syncedLyrics != null)
                 result = match.syncedLyrics;
-           
+
             if (result == null && !OnlySyncedLyrics)
                 result = match.plainLyrics;
 
@@ -176,7 +192,7 @@ namespace LRCLIBee
 
             if (AddLyricsSource)
                 result = $"Source: {LyricsProviderName}\n\n" + result;
-            
+
             return result;
         }
 
@@ -184,7 +200,7 @@ namespace LRCLIBee
         {
             foreach (var match in matches)
             {
-                if (VerifyAlbum && match.albumName.ToLower() != album.ToLower()) continue;
+                if (!SearchByTitle && VerifyAlbum && match.albumName.ToLower() != album.ToLower()) continue;
 
                 if (Util.ValidateResult(artist, title, match.artistName, match.trackName, AllowedDistance))
                     if (duration == 0 || match.duration == duration)
@@ -194,7 +210,22 @@ namespace LRCLIBee
                     }
                     else Logger.Info("Mismatching durations: {duration} and {resultduration}", duration, match.duration);
             }
-         
+
+            Logger.Info("No results for this search");
+
+            return null;
+        }
+        private dynamic findInMatchesByTitleAndDuration(dynamic matches, string title, int duration = 0)
+        {
+            foreach (var match in matches)
+            {
+                if (title == match.trackName && duration == match.duration)
+                {
+                    if (OnlySyncedLyrics && String.IsNullOrEmpty(match.syncedLyrics)) continue;
+                    return match;
+                }
+            }
+
             Logger.Info("No results for this search");
 
             return null;
