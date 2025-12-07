@@ -101,7 +101,7 @@ namespace MusicBeePlugin
         {
             var tfile = TagLib.File.Create(source);
             string title = tfile.Tag.Title;
-            string artist = String.Join(" & ", tfile.Tag.AlbumArtists);
+            string artist = String.Join(" & ", tfile.Tag.Performers);
             string album = tfile.Tag.Album;
             int duration = (int)tfile.Properties.Duration.TotalSeconds;
 
