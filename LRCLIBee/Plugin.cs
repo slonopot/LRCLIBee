@@ -40,7 +40,7 @@ namespace MusicBeePlugin
 
             info.VersionMajor = 1;
             info.VersionMinor = 0;
-            info.Revision = 5;
+            info.Revision = 6;
 
             info.Description = $"LRCLIB support for MusicBee [{info.VersionMajor}.{info.VersionMinor}.{info.Revision}]";
             info.Author = "slonopot";
@@ -101,7 +101,7 @@ namespace MusicBeePlugin
         {
             var tfile = TagLib.File.Create(source);
             string title = tfile.Tag.Title;
-            string artist = String.Join(" & ", tfile.Tag.AlbumArtists);
+            string artist = String.Join(" & ", tfile.Tag.Performers);
             string album = tfile.Tag.Album;
             int duration = (int)tfile.Properties.Duration.TotalSeconds;
 
